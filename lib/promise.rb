@@ -224,7 +224,7 @@ class Promise
 
   def notify_fulfillment
     @observers.each_slice(3) do |observer, on_fulfill_arg|
-      observer.promise_fulfilled(value, on_fulfill_arg)
+      QUEUE.enqueue_microtask(observer, :promise_fulfilled, [value, on_fulfill_arg])
     end
 
     @observers = nil
@@ -232,7 +232,7 @@ class Promise
 
   def notify_rejection
     @observers.each_slice(3) do |observer, _on_fulfill_arg, on_reject_arg|
-      observer.promise_rejected(reason, on_reject_arg)
+      QUEUE.enqueue_microtask(observer, :promise_rejected, [value, on_reject_arg])
     end
 
     @observers = nil
